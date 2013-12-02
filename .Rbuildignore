@@ -1,0 +1,13 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+scratch_doc.R
+todo.html
+todo.md
+gvt_notes.txt
+.Rhistory
+dev.code.R
+README.html
+NEWS.md
+NEWS.html
+FAQ.md
+FAQ.html

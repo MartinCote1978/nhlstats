@@ -1,0 +1,163 @@
+THE METHOD
+
+A player's GVT value is the sum of three things: his Offensive Goals Versus Average (OGVT), his Defensive Goals Versus Threshold (DGVT), and his Goaltending Goals Versus Threshold (GGVT). In recent years, with the introduction of the shootout in the NHL, a fourth component, Shootout Goals Versus Threshold (SGVT), has been added. Each of these factors is calculated independently. However, before calculating any GVT values, we must first estimate ice time.
+
+Ice Time
+
+Different players don’t spend the same amount of time on the ice, and consequently don’t get the same level of opportunity to contribute. To estimate a player’s contribution, it is important that we have a rough idea of his ice time. Sadly, the NHL only started tracking official ice time in 1999. Since GVT was meant to work well historically, I took inspiration from my colleague Iain Fyffe and estimated ice time indirectly using the raw data from the plus-minus calculation. The NHL has tracked goals for and goals against while a player was on the ice since 1967, and this data can give us a good idea of the amount of time a player actually spent on the ice, even if there will be a bias (defensive players will seem to have spent less time on the ice and vice-versa).
+
+We first begin by estimating how much time each player spent on the ice in power-play, short-handed and even-strength situations. We estimate that the time a player spent on the power-play is the fraction of his team’s power-play minutes equal to the number of power-play goals he was on the ice for divided by his team’s total power-play goals:
+
+PPicetime = Pptimeteam * PGFplayer / PGFteam
+
+We do the same for short-handed situations and even-strength. For even-strength, the fraction is the average of ESGF and ESGA.
+
+Short-handed ice time is figured by inserting the short-handed data in place of the PP data in the above formula. Even strength ice time is calculated by using this formula:
+
+ES Ice Time = ES Time Team * ES Goals Player/ Es Goals Team.
+
+We then sum up all ice time into Offensive Ice Time and Defensive Ice Time. Offensive Ice Time is the total time spent on the ice weighted by the opportunity to score for each minute spent. Power-Play Ice Time is more valuable offensively than even-strength ice time but less valuable defensively, while Short-Handed Ice Time is less valuable offensively but more valuable defensively. Historically, Power-Play Minutes have been worth about 3 minutes of even-strength time offensively and about 0.5 minutes of even-strength time defensively.
+
+Finally, because there is a bias in the ice time numbers, we smooth out the ice time estimates by adding a constant factor which is proportionate to the number of games played. 25% of the team’s ice time is distributed evenly according to games played by position, so if defensemen got 40% of the total ice time and a team had 6 defensemen who each played all 82 games, then the estimate of ice time for each of them is:
+
+60 minutes-per-game * 5 players on the ice * 40% / 6 = 20 minutes per game.
+
+Armed with our ice time numbers, we can now start calculating GVT.
+
+Offensive GVT
+
+Offensive contribtutions are well-measured statistically, using goals and assists. In order to arrive at a single value for offense, we must combine goals and assist in some manner. NHL scoring races are determined by simply adding the two together; since there are about 1.7 assists awarded per goal in the NHL, this assumes that an individual's goal makes up about 37% of the value of a typical team goal scored, while an assist is worth about 37% as well (1 goal plus 1.7 assists times .37 equals 1.0). I feel that this overestimates the value of an assist somewhat. Therefore, the GVT method assumes that a goal is worth 1.5 times an assist. Using that, we calculate the team goal value of goals and assists like so:
+
+GVt = (Gt x 1.5)/(At + (Gt x 1.5))
+
+AVt = GVt / 1.5
+
+Where GVt is team goal value, AVt is team assist value, Gt is team goals, and At is team assists. This is done seperately for each team. Typically, it yields the following results: GVt = .47, AVt = .31. Note that .47 plus (1.7 times .31) equals 1.
+
+The GVT method is based upon comparing players to the threshold. Therefore we need to determine what the threshold offensive contribution is, by position. This is simply done, as follows:
+
+TOCf = [sum (Gf x GVf + Af x AVf)] / [sum (MPf)] * OTV
+
+TOCd = [sum (Gd x GVd + Ad x AVd)] / [sum (MPd)] * OTV
+
+Where TOCf is Threshold offensive contribution by a forward (per minute), TOCd is Threshold offensive contribution of a defenseman (per minute), Gf is goals by individual forwards, Gd is goals by individual defensemen, Af is assists by individual forwards, Ad is assists by individual defensemen, MPf is minutes played by individual forwards, MPd is minutes played by individual defensemen, GVf is goal value (based on team) for individual forwards, GVd is goal value for individual defensemen, AVf is assist value for individual forwards, AVd is assist value for individual defensemen, and OTV is the offensive threshold value, here set to 0.75. This means that a threshold player will have 75% of the offensive contribution of an average player.
+
+A player's OGVT is therefore:
+
+OGVT = (G x GV) + (A x AV) - (MP x TOC)
+
+Where G is the player's goals, A his assists, MP his minutes played, GV his goal value, AV his assist value, and TOC the Threshold offensive contribution value for his position.
+
+Goaltending GVT
+
+We'll tackle Goaltending GVT next because it is much easier to calculate than DGVT. A goaltender's contribution to his team's efforts to win is attempting to stop the shots that come his way. This is best measured by save percentage, which indicates the proportion of a goaltender's shots faced that are stopped.
+
+To compare goaltenders to the Threshold, we must compute Threshold save percentage:
+
+SPa = sum (SVg) / sum (SFg)
+
+SPt = SPa – GAAl * GTV
+
+SPa is the league average save %, SPt is the threshold save %, SVg is saves by individual goaltenders, SFg is shots faced by individual goaltenders, GAAl is the league average GAA, and GTV is the goaltending threshold value, here set to 0.04. In practice, what this means is that a threshold goaltender, playing on an average team, will allow 4% more goals than an average goaltender; this translates to about 11 goals a season in a typical year.
+
+A goaltender's GGVTraw is therefore calculated as the number of saves he made, less the number of saves that a goalie with a Threshold save percentage would have made:
+
+GGVTraw = SV - (SF x SPa)
+
+Where SV is the goaltender's saves, SF his shots against, and SPa the league Threshold save percentage.
+
+We have to do one last adjustment to the GGVT. In practice, a goaltender’s save percentage is not uniquely due to his own caliber of play: some of it is due to the quality of the shots he faces. We can see this because, historically, the save percentages of #1 and #2 goalies on the same team tend to be about 15% correlated, and because goaltenders who are traded to new teams often see their save percentage change significantly. Therefore, I attribute 75% of the responsibility of stopping a shot to the goaltender and 25% of it to the team’s defense.
+
+GGVT = GGVTraw * GR
+
+Where GR is Goaltender Responsibility, here set to 0.75.
+
+Defensive GVT
+
+Defense is by far the most difficult value to assign value to in the game of hockey. It is not particularly well-measured statistically. One safe way to proceed is to assume that if a team is good defensively, then its players are likely good defensively themselves. Put another way, the sum of the defensive contributions of all players on a team must equal that team's total defensive output. Since we have defined a goaltender's contribution to winning as stopping the shots he faces, the defense's contribution must be in preventing shots from being taken (plus the residual credit from the goaltending calculation). Therefore we use team shots allowed to assign value to team defense.
+
+The responsibility of defense is not equal among all players. Specifically, defensemen are more responsible for defense than are forwards, just as forwards are more responsible for offense than are defensemen. So how much more responsible are defensemen for a teams goal prevention than forwards? We could just assume a number, but let's see if we can arrive a figure logically.
+
+Forwards score, on average, about 85% of all goals and record 75% of all assists. A typical GV is 0.47; 85% of this is .40. A typical AV is 0.31; this, times 1.7, times 75% is also .40. Forwards therefore record .80 offensive value on each goal scored. This leaves .20 for defensemen. Typically, 12 forwards play in each game for each team. This means that an individual forward records .067 offensive value on each goal (.80 divided by 12). Typically six defensemen play each game; therefore, an individual defenseman records .033 offensive value on each goal. This indicates that individual forwards are responsible for twice the offense of individual defensemen.
+
+It follows that individual defensemen are probably twice as responsible as forwards for defense, since there is no reason to believe either players of either position are more valuable on the whole. Since defensemen typically get 33% more ice time, this means that they are 50% more responsible defensively per minute played (1.33 * 1.5 = 2). Therefore the sum of adjusted defensive minutes played for a team is:
+
+ADGPt = sum (MPf) + sum (1.5 x MPd)
+
+Where MPf are minutes played by forwards and MPd are minutes played by defensemen. The first factor of DGVT is thus:
+
+DGVTa = SPMteam * (1- SPa) * ADMPp / ADMPt
+
+Where SPMteam is the shots below average allowed by the team, SPa is the league average save %, and ADMPp is the player's adjusted defensive minutes played (equal to MP for forwards, 1.5 x GP for defensemen). If a team allows 100 less shots over the course of a season and the league average save % is .900, then it has in effect prevented 10 goals against defensively. The defensive responsibility for these 10 goals against are distributed evenly among the team's players, weighted by defensive ice time, with adjustments for each player's position.
+
+From here, we move on to the second factor of DGVT, which differentiates players on a team based on their performance. For this, we need an indicator of individual defensive performance. Unfortunately, this is the aspect of hockey that has the least useful statistical information. Plus-minus is the best mainstream statistic in this regard, and even it is only half defensive. While it is often called a defensive stat, plus-minus also reflects offense, since a player scoring a goal receives a plus. There are a variety of other problems with plus-minus as well, but it is the best statistic available for this purpose that has been tracked over a long period of time.
+
+We can significantly improve plus-minus by adjusting it to account for team performance; my regular readers will recognize many of the same calculations that lead to relative plus/mins, RPM. Players on good teams will have better plus-minus ratings, because plus-minus is significantly affected by one's teammates. We therefore adjust a player's plus-minus based on the average plus-minus for his team.
+
+A player’s plus-minus is simply equal to:
+
+EGF – EGA
+
+For each team, we do the sum of all players on the team:
+
+TEGF = sum(EGF)
+
+TEGA = sum(EGA)
+
+A player’s adjusted plus-minus is thus:
+
+APM = EGF – EGA – (EGF + EGA) * (TEGF - TEGA) / (TEGF + TEGA)
+
+However, this adjusted plus-minus cannot be applied directly, because at any one time there are ten players on the ice (on average): three forwards and two defensemen for either team. So a single player can only do so much to affect any outcome on the ice. We could simply multiply a player's APM by one-tenth, but remember, we have decided that defensemen are twice as responsible for defensive play. Since some of that difference is included in their 33% extra ice time (and extra ice time is incorporated into plus-minus, since being on the ice longer means more pluses and more minuses), we calculate that plus-minus for defensemen is 1.5 times more important than for forwards.
+
+So the calculation to find a player's plus-minus factor is as follows:
+
+PMFf = (1 / 10) x (5 / 6) = 0.083
+
+PMFd = (1 / 10) x (5 / 6) x 1.5 = 0.125
+
+The (1 / 10) factor represents the player being one of ten on the ice at any one time. The (5 / 6) factor represents players on ice vs. weighted players on ice: 3 forwards * 1.0 + 2 defensemen * 1.5 = 6 weighted players on the ice. Defensemen get an additional multiplier to represent their additional defensive responsility, as discussed earlier. Note that these factors will always sum to one.
+
+The second factor of defensive contribution is therefore (for forwards and defensemen respectively):
+
+DGVTbf = APMf x PMFf
+
+DGVTbd = APMd x PMFd
+
+There is a third factor of defensive contribution, which is the 25% of GGVTraw that we decided to attribute to team defense. The sum of all the goaltender’s contributions must be distributed among all the defensive players on the team according to weighted defensive ice time.
+
+DGVTc = GGVTraw * (1- GR) * ADMPp / ADMPt
+
+A player's total defensive contribution is as follows:
+
+DGVT = DGVTa + DGVTb + DGVTc
+
+Shootout GVT
+
+Since 2005, the NHL has used shootouts to decide games that are still tied at the end of 5-minute overtime. As shootout goals do count in the standings, it is important that we factor in players’ shootout contributions in the total value.
+
+Shootout goals are a slightly different currency from ordinary goals. Shootout goals do not necessarily correspond to “decision” goals on a 1:1 basis, i.e. if I score my team could still lose the shootout and will not be credited with any goals for. In practice, because the odds of scoring on the shootout are only about 0.3, a shootout goal is worth about 0.8 decision goals.
+
+Second of all, shootout decision goals are slightly more valuable in the standings: while the ratio of ordinary goals to points in the standings varies with the level of scoring in the league and is approximately equal to Goals/Game (between 2.5 and 3 in recent years), the ratio of decision goals to points is always 2 to 1 (because the goal differential between winning and losing the shootout is 2, while the points differential is 1). Nevertheless, to maintain a common currency, we will assume that shootout decision goals have the same value as regulation time goals, which means that a shootout score or save is worth about 0.8 of a goal.
+
+Given these premises, calculating a player’s shootout value is trivial. First, calculate the league-wide shootout save %:
+
+STSP = (sum(STS) – sum(STG)) / sum(STS)
+
+Where STS is Shootout Shots and STG is Shootout Goals.
+
+Second, we calculate the shootout decision value (STDV), which is the slope of shootout goals for and against to shootout wins and losses. This is usually equal to about 0.8.
+
+Then a position player’s shootout GVT value is:
+
+SGVT = (STG – STS * (1- STSP)) * STDV
+
+Finally, a goaltender’s shootout GVT value is:
+
+SGVT = (STS * STSP – STGa) * STDV
+
+Putting It All Together
+
+Combining all four variables, a player's total Goals Versus Threshold figure is as follows:
+
+GVT = OGVT + DGVT + GGVT + SGVT

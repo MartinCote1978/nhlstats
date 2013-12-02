@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+*.Rproj
+*.html
+*.SyncID
+*.SyncIgnore
+todo.md
+scratch_doc.R
+dev.code.R

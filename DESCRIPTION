@@ -1,0 +1,15 @@
+Package: nhlstats
+Type: Package
+Title: Collection of NHL statistics for analysis with R
+Description: This package provides a comprehensive collection of various 
+    National Hockey League statistics as a set of R data.frames. The sources
+    for these data sets include the Hockey Database (2013 version), hockey-reference.com, 
+    and behindthenet.ca.
+Version: 0.0-1
+Authors@R: person("Eric", "Nantz", role = c("aut", "cre"), email="thercast@gmail.com")
+Depends: R (>= 3.0.2)
+Suggests: plyr, stringr, lubridate, ggplot2, knitr
+URL: https://github.com/thercast/nhlstats
+License: # getOptions('devtools.desc.license')
+LazyData: true
+VignetteBuilder: knitr
