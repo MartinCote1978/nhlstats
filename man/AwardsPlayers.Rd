@@ -31,6 +31,6 @@ with(AwardsPlayers, table(award))
 # which players have won at least 5 Art Ross awards?
 art_ross <- subset(AwardsPlayers, award=="Art Ross")
 ar_count <- table(art_ross$playerID)
-sort(ar_count[ar_count >= 5], decreasing=TRUE)maybe str(AwardsPlayers) ; plot(AwardsPlayers) ...
+sort(ar_count[ar_count >= 5], decreasing=TRUE)
 }
 \keyword{datasets}

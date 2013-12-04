@@ -32,8 +32,8 @@ data(Scoring)
 require(plyr)
 
 
-scoring_sup <- ddply(subset(Scoring, playerID %in% unique(ScoringSup$playerID)), 
-                     .(playerID, year), 
+scoring_sup <- ddply(subset(Scoring, subset=(playerID \%in\% unique(ScoringSup$playerID))), 
+                     c("playerID", "year"), 
                      summarize,
                      PPA = sum(PPA),
                      SHA = sum(SHA))

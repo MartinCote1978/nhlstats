@@ -8,7 +8,7 @@ Coaches Table
 Coaches table: information about invidual team coaches, teams they coached and
 some basic statistics for those teams in each season.
 }
-\usage{data(Coaches_beta)}
+\usage{data(Coaches)}
 \format{
   A data frame with 1812 observations on the following 15 variables.
   \describe{
