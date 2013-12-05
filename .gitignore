@@ -5,6 +5,7 @@
 *.html
 *.SyncID
 *.SyncIgnore
+.SyncArchive/
 todo.md
 scratch_doc.R
 dev.code.R
