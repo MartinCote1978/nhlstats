@@ -1,9 +1,18 @@
 #------------------------------------------------------------------------------
 # File: read-hockeydb.R
-# Author: Eric Nantz
+# Author: Eric Nantz, Martin Cote
 # URL: https://github.com/thercast/nhl_analysis/blob/master/data/
 # Email: theRcast@gmail.com
 # Purpose: Import and process hockey database files for nhlstats package
+#
+# Usage:
+# 1. Load up all files
+# 2. Save locally the ZIP file from hockey_databank and unzip it.
+# 3. Run the ProduceNHLStats method with the following parameters:
+#     3.1 String: working directory
+#     3.2 String: folder name
+#
+#
 #------------------------------------------------------------------------------
 
 library(Rd2roxygen)
